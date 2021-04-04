@@ -1,23 +1,22 @@
-from copy import copy
-
 applicants = []
-departments = {'Mathematics': [], 'Physics': [], 'Biotech': [], 'Chemistry': [], 'Engineering': []}
+departments = {'Biotech': [], 'Chemistry': [], 'Engineering': [], 'Mathematics': [], 'Physics': []}
+exam = {'Biotech': 3, 'Chemistry': 3, 'Engineering': 5, 'Mathematics': 4, 'Physics': 2}  # field indexes in input file
+
 max_accepted = int(input())
 with open('applicants.txt') as f:
     for line in f:
         applicants.append(line.split())
 
-applicants_sorted = sorted(applicants, key = lambda x: (-float(x[2]), x[0], x[1]))
+for i in range(6, 9):  # priority fields in input file
+    for dep in departments.keys():
+        applicants_sorted = sorted(applicants, key=lambda x: (x[i], -float(x[exam[dep]]), x[0], x[1]))
+        for applicant in applicants_sorted:
+            if len(departments[dep]) < max_accepted and applicant[i] == dep:
+                departments[dep].append((applicant[0], applicant[1], applicant[exam[dep]]))
+                applicants.remove(applicant)
 
-for i in range (3, 6):  # priority fields in file
-    for applicant in copy(applicants_sorted):
-        if len(departments[applicant[i]]) < max_accepted:
-            departments[applicant[i]].append(applicant)
-            applicants_sorted.remove(applicant)
-
-
-for department in sorted(departments.keys()):
+for department in departments.keys():
     print(department)
-    for student in sorted(departments[department], key = lambda x: (-float(x[2]), x[0], x[1])):
+    for student in sorted(departments[department], key=lambda x: (-float(x[2]), x[0], x[1])):
         print(*student[:3])
     print()
