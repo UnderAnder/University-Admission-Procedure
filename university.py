@@ -1,22 +1,21 @@
-applicants = []
 departments = {'Biotech': [], 'Chemistry': [], 'Engineering': [], 'Mathematics': [], 'Physics': []}
-exam = {'Biotech': 3, 'Chemistry': 3, 'Engineering': 5, 'Mathematics': 4, 'Physics': 2}  # field indexes in input file
+# related exams fields indexes in input file
+exam = {'Biotech': (2, 3), 'Chemistry': (3, 3), 'Engineering': (4, 5), 'Mathematics': (4, 4), 'Physics': (2, 4)}
 
 max_accepted = int(input())
 with open('applicants.txt') as f:
-    for line in f:
-        applicants.append(line.split())
+    applicants = [line.split() for line in f]
 
 for i in range(6, 9):  # priority fields in input file
     for dep in departments.keys():
-        applicants_sorted = sorted(applicants, key=lambda x: (x[i], -float(x[exam[dep]]), x[0], x[1]))
+        applicants_sorted = sorted(applicants, key=lambda x: (-(int(x[exam[dep][0]])+int(x[exam[dep][1]])), x[0], x[1]))
         for applicant in applicants_sorted:
-            if len(departments[dep]) < max_accepted and applicant[i] == dep:
-                departments[dep].append((applicant[0], applicant[1], applicant[exam[dep]]))
+            if applicant[i] == dep and len(departments[dep]) < max_accepted:
+                score = (int(applicant[exam[dep][0]]) + int(applicant[exam[dep][1]])) / 2
+                departments[dep].append([applicant[0], applicant[1], score])
                 applicants.remove(applicant)
 
-for department in departments.keys():
-    print(department)
-    for student in sorted(departments[department], key=lambda x: (-float(x[2]), x[0], x[1])):
-        print(*student[:3])
-    print()
+for dep in departments.keys():
+    with open(f'{dep.lower()}.txt', 'w', encoding='utf-8') as f:
+        for student in sorted(departments[dep], key=lambda x: (-x[2], x[0], x[1])):
+            print(*student, file=f)
