@@ -8,7 +8,7 @@ with open('applicants.txt') as f:
 
 for i in range(7, 10):  # priority fields in input file
     for dep in departments.keys():
-        sort_key = lambda x: (-max(int(x[exam[dep][0]]) + int(x[exam[dep][1]]), float(x[6]) * 2), x[0], x[1])
+        sort_key = lambda x: (-max(int(x[exam[dep][0]]) + int(x[exam[dep][1]]), int(x[6]) * 2), x[0], x[1])
         for applicant in sorted(applicants, key=sort_key):
             if applicant[i] == dep and len(departments[dep]) < max_accepted:
                 score = max(((int(applicant[exam[dep][0]]) + int(applicant[exam[dep][1]])) / 2), float(applicant[6]))
